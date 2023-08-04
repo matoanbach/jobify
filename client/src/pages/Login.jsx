@@ -1,22 +1,51 @@
-import { Link, Navigate, useActionData, useNavigate } from "react-router-dom";
+import {
+  Form,
+  Link,
+  Navigate,
+  redirect,
+  useActionData,
+  useNavigate,
+} from "react-router-dom";
 import Wrapper from "../assets/wrappers/RegisterAndLoginPage";
 import FormRow from "../components/FormRow";
 import Logo from "../components/Logo";
+import { toast } from "react-toastify";
+import customFetch from "../utils/customFetch";
 
 export const action = async ({ request }) => {
   const formData = await request.formData();
-  return formData;
+  const data = Object.fromEntries(formData);
+
+  try {
+    await customFetch.post("/auth/login", data);
+    toast.success("Successful Login");
+    return redirect("/dashboard");
+  } catch (error) {
+    toast.error(error?.response?.data?.msg);
+    return error;
+  }
 };
 
 function Login() {
   const formData = useActionData();
   const navigate = useNavigate();
-  const loginDemoUser = () => {
-    navigate("/dashboard");
-  }
+  const loginDemoUser = async () => {
+    const demoUser = {
+      email: "test@test.com",
+      password: "secret123",
+    };
+    try {
+      await customFetch.post("/auth/login", demoUser);
+      toast.success("Demo User on board");
+      return navigate("/dashboard");
+    } catch (error) {
+      toast.error(error?.response?.data?.msg);
+      return error;
+    }
+  };
   return (
     <Wrapper>
-      <form className="form">
+      <Form method="post" action="" className="form">
         <Logo />
         <h4>login</h4>
         <FormRow type="email" name="email" />
@@ -29,11 +58,11 @@ function Login() {
         </button>
         <p>
           Not a member yet?
-          <Link to="/register" className="member-btn" >
+          <Link to="/register" className="member-btn">
             Register
           </Link>
         </p>
-      </form>
+      </Form>
     </Wrapper>
   );
 }

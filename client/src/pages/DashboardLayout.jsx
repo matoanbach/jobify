@@ -1,13 +1,42 @@
 import React, { useContext, useState, createContext } from "react";
-import { Outlet } from "react-router-dom";
+import {
+  Outlet,
+  redirect,
+  useLoaderData,
+  useNavigate,
+  useNavigation,
+} from "react-router-dom";
 import Wrapper from "../assets/wrappers/Dashboard";
 import { BigSidebar, Navbar, SmallSidebar } from "../components";
+import customFetch from "../utils/customFetch";
+import { toast } from "react-toastify";
+
+const queryUser = {
+  queryKey: ["user"],
+  queryFn: async () => {
+    const { data } = await customFetch.get("/users/current-user");
+    return data;
+  },
+};
+
+export const loader = (queryClient) => async () => {
+  try {
+    return await queryClient.ensureQueryData(queryUser);
+  } catch (error) {
+    redirect("/");
+    return error;
+  }
+};
 
 const DashboardContext = createContext();
 
-function DashBoardLayout({isDarkThemeEnabled}) {
+function DashBoardLayout({ isDarkThemeEnabled }) {
+  const { user } = useLoaderData();
+  const navigate = useNavigate();
+  const navigation = useNavigation();
+  const isPageLoading = navigation.state === "loading";
   // temp
-  const user = { name: "john" };
+
   const [showSidebar, setShowSidebar] = useState(false);
   const [isDarkTheme, setIsDarkTheme] = useState(isDarkThemeEnabled);
 
@@ -23,7 +52,9 @@ function DashBoardLayout({isDarkThemeEnabled}) {
   };
 
   const logoutUser = async () => {
-    console.log("logout user");
+    navigate("/");
+    await customFetch.get("auth/logout");
+    toast.success("successful logout")
   };
   return (
     <DashboardContext.Provider
@@ -43,7 +74,7 @@ function DashBoardLayout({isDarkThemeEnabled}) {
           <div>
             <Navbar />
             <div className="dashboard-page">
-              <Outlet />
+              <Outlet context={{ user }} />
             </div>
           </div>
         </main>

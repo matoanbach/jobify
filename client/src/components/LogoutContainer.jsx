@@ -6,6 +6,7 @@ import { useDashboardContext } from "../pages/DashBoardLayout";
 function LogoutContainer() {
   const [showLogout, setShowLogout] = useState(false);
   const { user, logoutUser } = useDashboardContext();
+  console.log(user)
   return (
     <Wrapper>
       <button
@@ -13,8 +14,13 @@ function LogoutContainer() {
         className="btn logout-btn"
         onClick={() => setShowLogout(!showLogout)}
       >
-        <FaUserCircle />
-        zippy
+        {user.avatar ? (
+          <img src={user.avatar} alt="avatar" className="img" />
+        ) : (
+          <FaUserCircle />
+        )}
+
+        {user?.name}
         <FaCaretDown />
       </button>
       <div

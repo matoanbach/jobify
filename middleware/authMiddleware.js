@@ -13,8 +13,9 @@ export const authenticateUser = async (req, res, next) => {
 
   try {
     const { userId, role } = verifyJWT(token);
+    const testUser = userId === "64cc40653190b57931936358";
 
-    req.user = { userId, role };
+    req.user = { userId, role, testUser };
 
     next();
   } catch (error) {
@@ -28,4 +29,9 @@ export const authorizePermissions = (role) => {
       throw new UnauthorizedError("not authorized to access this route");
     next();
   };
+};
+
+export const checkForTestUser = (req, res, next) => {
+  if (req.user.testUser) throw new BadRequestError("Demo User. Read Only!");
+  next();
 };
