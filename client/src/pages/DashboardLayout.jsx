@@ -21,7 +21,8 @@ const queryUser = {
 
 export const loader = (queryClient) => async () => {
   try {
-    return await queryClient.ensureQueryData(queryUser);
+    const { data } = await customFetch.get("/users/current-user");
+    return data;
   } catch (error) {
     redirect("/");
     return error;
