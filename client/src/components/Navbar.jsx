@@ -2,7 +2,7 @@ import Wrapper from "../assets/wrappers/Navbar";
 import { FaAlignLeft } from "react-icons/fa";
 import Logo from "./Logo";
 import { ThemeToggle, LogoutContainer } from "../components";
-import { useDashboardContext } from "../pages/DashBoardLayout";
+import { useDashboardContext } from '../pages/DashboardLayout';
 function Navbar() {
   const { toggleSidebar } = useDashboardContext();
   return (
